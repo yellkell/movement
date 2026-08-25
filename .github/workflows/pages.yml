@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - claude/iwsdk-research-experience-elinqr
+      - claude/movement-mechanics-consolidation-839i2x
     paths:
       - 'stepwell/**'
       - 'voidstep/**'
