@@ -13,7 +13,7 @@ and the answers sort into five families.
 | 2 | **Discrete** | still | jumps | low | line of sight | teleport / snap turn |
 | 3 | **Pure room-scale** | moves 1:1 | fixed | none | the real room | RAVE RAID |
 | 4 | **Dynamic room-scale** | moves 1:1 | re-anchored per platform | low–moderate | nothing (in principle) | **Eye of the Temple** |
-| 5 | **Folded space** | moves 1:1 | fixed; the *world* is non-Euclidean | none–low | nothing (in principle) | **Spellbound Spire** |
+| 5 | **Folded space** | moves 1:1 | fixed; the *world* is non-Euclidean | none–low | nothing (in principle) | **Spellbound Spire**, Tea for God |
 
 Families 1 and 2 are what every SDK ships, including the one we build on.
 Families 3–5 are where the interesting design is, and 4 and 5 are the two
@@ -23,75 +23,127 @@ virtual travel out of a 2 × 2 m room with no vestibular lie.**
 There is also a sixth trick, which we appear to have invented by accident and
 which nobody else seems to run — see [Inverse locomotion](#6-inverse-locomotion-the-trick-we-already-have) below.
 
+### The axis the table misses
+
+Comfort is the cost everyone measures. Johansen's *embodied immersion* articles
+name a second one that matters at least as much, and that runs the same
+direction:
+
+> Embodied movement **doesn't have to be learned.** Nobody learns to look with
+> their head, take a step, or swing something they're holding. So there is a
+> **direct correlation between how embodied a scheme is and the ceiling on how
+> intuitive it can be** — how approachable the game is to someone with no game
+> literacy at all.
+
+Immersion and approachability are usually treated as a trade-off. On this axis
+they're the same quantity. Read the table again with it: families 1 and 2 both
+require an *interface the player must learn*, and — Johansen's sharper point —
+even once learned, that interface keeps taking attention for the rest of the
+game. Families 3–5 require nothing. Eye of the Temple uses **no controller
+buttons or thumbsticks at all**, save one optional button that opens the menu.
+
+The distinction that makes that survivable is his: there is a difference between
+an **interface between the player and the game** (a teleport arc, a grab button)
+and an **interface inside the game world** (a lever, a torch you light from
+another torch) — *"just like how there are interfaces all around us in the
+physical world, such as door handles, knobs on stoves, and steering wheels."*
+The second kind costs nothing, because figuring it out *is* being in the world.
+
+This matters to us more than it looks. RAVE RAID is already family 3 with no
+learned locomotion — the reason a first-timer can be dropped onto a deck and
+dance. Every mechanic we add should be checked against it: *does this need to be
+taught, or does the body already know it?*
+
 ---
 
 ## 1. Eye of the Temple — dynamic room-scale
 
-Rune Skovbo Johansen, 2021 (PC VR) / 2023 (Quest 2, co-developed with Salmi
-Games). Road to VR's 2021 Excellence in Locomotion award. The deep dive lives
-in [`03-eye-of-the-temple.md`](03-eye-of-the-temple.md); this is the mechanism
-in one page.
+Rune Skovbo Johansen. Prototyped at a January 2016 VR game jam, PC VR 2021,
+Quest 2 in 2023 with Salmi Games. Road to VR's 2021 Excellence in Locomotion
+award. The full treatment — now written from Johansen's own three Quest-launch
+articles — is in [`03-eye-of-the-temple.md`](03-eye-of-the-temple.md); this is
+the mechanism in one page.
 
-**The claim:** you traverse a huge vertical temple entirely on your own feet,
-with no teleport, no stick, no artificial locomotion of any kind, inside a
-**2 m × 2 m** play space with 360° tracking.
+**The claim:** traverse a huge vertical temple entirely on your own feet, with
+no teleport, no stick, and in fact **no controller buttons or thumbsticks at
+all**, inside a **2 m × 2 m** play space with 360° tracking.
 
-**The mechanism — the frame of reference.** The virtual world is a grid of
-platforms. Every platform has a **designated spot in the play area** —
-generally one square of a notional 3 × 3 grid laid over the player's real
-floor (a larger platform claims several squares). The *frame of reference* —
-the slice of virtual space that the physical play area is currently mapped
-to — **follows whichever platform you are standing on.** Step from platform A
-to platform B and the tracking hands over: the mapping re-anchors to B, and B's
-designated spot becomes where you now are in the real room.
+**The paired step.** The core trick is simpler than it looks. Step *forward*
+onto a moving platform and *forward* off it, and you have left your play area.
+Put the platform **to the side**: you sidestep on, it travels, you sidestep
+off — right then left — and you are back in the centre. Every traversal is a
+pair of opposed steps that nets to zero, while the platform's own travel
+supplies the virtual distance.
 
-Two consequences fall straight out of that:
+**The frame of reference.** The game **tracks one platform at a time**, and a
+tracked platform is static relative to the physical play area. The *frame of
+reference* — the slice of virtual space the play area maps to — follows it.
+Every platform declares a **designated spot in the play area**, generally one of
+**nine positions** on a 3 × 3 grid (several, if it's larger). So a tracked
+platform that moves carries the whole world past a stationary body, and the step
+from one platform to the next is set by the difference between their squares:
+**virtual adjacency authors a real footstep**, bounded by construction because
+there are only nine squares to claim.
 
-- **A moving platform carries the whole world with it.** Ride a platform that
-  travels 6 m across a chasm and your real body has not moved at all; the
-  world moved under a frame of reference that is welded to the platform. This
-  is what buys the vertical, expansive temple.
-- **Level design becomes a constraint solver.** Because every platform
-  declares which real-floor square it occupies, the *virtual* adjacency of two
-  platforms determines the *physical* step the player must take. Authoring a
-  route is authoring a walk. Johansen built a **pattern overlay** — a texture
-  representing the whole play area, thick white border at the edge, thick
-  circle in the centre — and stamped it on every platform, so he could see at
-  a glance which real square each one claimed. The design tool is a texture.
+**Handover is gated, not immediate.** If you step onto a platform that has
+already begun leaving, it **slides into correct alignment under your feet** — a
+fifth of a tile is unnoticeable, larger corrections feel odd but resolve in a
+couple of seconds and are rare. For the other case he found something better than
+correcting: tracking is simply **prevented from switching to an incoming platform
+until it is properly aligned**, since moving the frame of reference toward a
+platform and then straight back is worse than not moving it. That change **halved
+the situations needing correction**.
 
-**The roller — a boundary pump.** The signature object is the rolling
-cylinder. To stay on top of a rolling log you have to **backpedal**, exactly
-as you would on water. That is not flavour; it is a *drift control*. A roller
-is a mechanism that consumes real-floor travel in a chosen direction while
-producing virtual travel in the opposite one — the developer's way of pushing
-the player back off the guardian edge without the player ever perceiving a
-correction. Step left in your room to board a platform, and the sequence will
-soon require you to step right. Walk backwards on a barrel and you will
-shortly be asked to walk forwards. The level *is* the redirection.
+**The roller is a drift pump.** A translating platform is neutral. A rolling
+cylinder is asymmetric: staying on top means walking against its roll, so it
+**consumes real-floor travel in one direction while producing virtual travel in
+the other** — the level's way of walking you back off the guardian edge without
+you noticing.
 
-**Where it strains.**
+**Foot fences.** Where the geometry would let a player step across at a moment
+that breaks the tracking logic, he places small fences that are **purely visual
+and prevent nothing**. You can step over or through them; it just feels like more
+effort than using the gap. A visual affordance solving a systems constraint, with
+zero code in the critical path — the most transferable single idea in the
+article.
 
-- The alignment between the outgoing and incoming platform matters at the
-  handover, though it is forgiving — a slightly misaligned step does not break
-  the game, it just shifts you within the play area.
-- The floor is a hard 2 × 2 m + 360°. That excludes a large share of headset
-  owners outright, and it is the most common criticism of the game.
-- PC VR headsets position the play space optimally on their own; **Quest needs
-  a manual recentre** (hold the left Meta button) if the player has drifted.
-  The elegance is not fully automatic.
-- Riding moving platforms is still visual motion your body is not producing.
-  The vestibular system tolerates it far better than stick locomotion, but
-  it is not free.
-- The design's own gravity: a clockwork, almost turn-based feel. Some
-  reviewers found the mechanic more compelling as a demo than as a game — the
-  locomotion constraint crowds out puzzle, narrative and environmental variety.
+**Level design is a constraint solver, and the tool is a texture.** Every
+platform wears an overlay of the play-area pattern showing its claimed square —
+and, crucially, **ghostly copies of that pattern at both ends of a moving
+platform's travel**. Correctness becomes a visual continuity check: if
+neighbouring patterns tile **like puzzle pieces that fit together**, the
+platforms work. He debugged it in mixed-reality capture with the grid painted on
+his real floor.
 
-**The lesson for us.** The trick is not "moving platforms". The trick is that
-**the play-area mapping is a first-class, authored, per-object property**, and
-level design is downstream of it. Anyone copying the platforms without
-copying the constraint discipline gets a game that walks you into a wall.
+**The constraint reaches far past locomotion.** This is the cost nobody outside
+the primary sources mentions. Whip swings are fast and wide, so **the whip only
+works from a platform at the centre square** — which killed a planned
+flying-scarab fight, forced every whip puzzle to be authored around centre
+platforms, and made the whip roll up inert everywhere else. Collectible gems sit
+in arcs constrained by both virtual walls *and* the play-area edge; when both
+sides are blocked they can only go overhead, and **placement had to be automated
+with an algorithm** because doing it by hand was intractable.
 
----
+**He does not adapt to the player's room**, and says so explicitly: varying
+gameplay by actual play-area size was *"not viable (or even desirable in my
+opinion)"*, so he always assumes the minimum and designs to it. Given that his
+constraints govern whip usage and gem placement as well as platform positions,
+that is a stronger position than it first appears — see §4.
+
+**Where it strains.** A hard 2 × 2 m + 360° excludes many players, and is the
+most common criticism. Quest needs a **manual recentre** (hold the left Meta
+button) where PC VR positions the space automatically. Riding platforms is still
+visual motion the body isn't producing. And the sharpest critique is that the
+mechanic crowds out the game: *"looks great in a demo video but is extremely
+limiting when it comes to game design."* Johansen half-concedes it — the
+restrictions include ones **visible to the player**, namely *"there's moving
+platforms everywhere, which can feel somewhat contrived."*
+
+**The lesson for us.** The trick is not "moving platforms". It is that **the
+play-area mapping is a first-class, authored, per-object property**, that
+correctness is made *visible* rather than asserted, and that the constraint then
+propagates into every system that uses the player's arms. Anyone copying the
+platforms without copying that discipline gets a game that walks you into a wall.
 
 ## 2. Spellbound Spire — folded space
 
@@ -140,6 +192,25 @@ worth memorising:
 
 That last point is a design constraint, not a footnote: telling the player
 "this space is impossible" costs you the effect.
+
+**The family's own cost, from a rival.** Johansen grades non-Euclidean space in
+his room-scale comparison (naming **Tea for God** as the exemplar rather than
+Spellbound Spire) and lands two criticisms that neither the Spire team nor the
+Suma paper raises:
+
+- **You can't form a mental map**, because the world isn't spatial in the
+  traditional sense. Whether that's a loss depends entirely on whether
+  disorientation is part of the fiction.
+- **Spaces tend to be dominated by cramped corridors with limited overview of
+  the world** — the seams have to be hidden, and a corridor with a doorway is
+  the cheapest place to hide one.
+
+That second point is the practical one. Folded space buys unlimited *travel* and
+spends *vista*, which is the exact opposite trade from moving platforms, where
+the whole appeal is seeing something far away and then walking to it. For a game
+whose environment work is four depth layers of distant scenery
+([`02`](02-environments-quest3.md)), that trade is a bad fit — worth knowing
+before we spend a prototype on portals.
 
 ---
 
@@ -398,12 +469,26 @@ so it inherits desktop emulation and hand-tracking micro-gestures for free.
 attached to it. Reference space defaults to **`local-floor`**, and the session
 offers `['local-floor', 'bounded-floor', 'layers']`.
 
-`bounded-floor` is quietly the most interesting thing on that list and we use
-none of it: it is the reference space that reports the **actual polygon of the
-user's play area**. A dynamic room-scale system that wanted to *fit itself* to
-the player's real room — rather than demanding a fixed 2 × 2 m like both
-comparison games do — would start there. Scene understanding (`XRPlane`,
+`bounded-floor` is the one we use none of: it is the reference space that reports
+the **actual polygon of the user's play area**. Scene understanding (`XRPlane`,
 `XRMesh` with semantic labels, `XRAnchor`) is also wired up in the SDK.
+
+The obvious idea is to *fit ourselves* to the player's real room instead of
+demanding a fixed rectangle as both comparison games do — but Johansen argues
+directly against it, and he's earned the right to. Varying gameplay by actual
+play-area size was, in his words, *"not viable (or even desirable in my
+opinion)"*. The reason it's stronger than it sounds is what his constraints
+turned out to govern: not just platform positions, but **where the whip may be
+used and where a collectible may be placed**. Adapting means every one of those
+becomes a function of play-area size, and he had to write an algorithm just to
+place gems against the *fixed* constraint set.
+
+Our position is already his: the deck is a fixed 1.72 × 1.5 m because the
+telegraph geometry is authored against it. So the useful conclusion is that
+`bounded-floor` belongs in **validation, not adaptation** — read the room, and
+if it can't hold the deck plus margin, say so plainly before the set starts
+rather than discovering it when someone punches a wall mid-nova. That is a real
+feature neither exemplar ships, and it's a fraction of the work.
 
 ### What `dance` does with all of it
 
@@ -437,13 +522,20 @@ portals exist to avoid.
 
 Some specific unexplored combinations, all reachable from what exists:
 
-- **Dynamic room-scale on a rhythm grid.** Eye of the Temple's platforms move
-  on "a set loop"; reviewers describe it as feeling *almost turn-based*. Our
-  entire choreography engine is already beat-quantized with a sacred windup.
-  A platform whose travel is quantized to bars, telegraphed with the same
-  amber→red fill language, is the obvious unbuilt thing: **the floor itself as
-  a move.** The park model already knows where a correct dodge leaves you —
-  which is exactly the input a frame-of-reference handover needs.
+- **Dynamic room-scale on a rhythm grid.** Two of the ten button-less
+  interactions on Johansen's own list are **"duck under an obstacle while on a
+  moving platform"** and **"dodge to the side to avoid an obstacle while on a
+  moving platform"** — which are our `sweep` and `beam`, performed on ground
+  that is itself in motion. His platforms run on set loops and he says the
+  result feels *"almost turn-based even though movements are in real-time"*;
+  having noticed that, he went and took inspiration from **Lara Croft Go**, an
+  actual turn-based puzzle game. **We are already that genre.** The clockwork
+  quality that reads as a limitation in an adventure game is the native grammar
+  of a rhythm game, and a platform whose travel is quantized to bars and
+  telegraphed in the amber→red fill language is the obvious unbuilt thing:
+  **the floor itself as a move.** The park model already knows where a correct
+  dodge leaves a dancer, which is exactly the input a frame-of-reference
+  handover needs.
 - **The roller as a beat instrument.** The rolling cylinder is a drift pump.
   A pump whose rate is a musical tempo is a *groove* you have to walk.
 - **Portals as the club's doors.** The three-places law ("where you are is
@@ -455,9 +547,17 @@ Some specific unexplored combinations, all reachable from what exists:
   puzzle game. A gain applied *only* to the dodge axis would make a 1.5 m deck
   read as a 2.25 m one. That is a real, testable, possibly terrible idea — and
   it is the cheapest way to buy floor we don't have.
-- **`bounded-floor` fitting.** Both exemplars demand a fixed 2 × 2 m. Reading
-  the player's actual play-area polygon and *sizing the deck to it* — rather
-  than assuming — is a thing neither game does and the platform supports.
+- **`bounded-floor` validation.** Not *sizing the deck to the room* — Johansen
+  argues convincingly against adapting (§4) — but reading the play-area polygon
+  and telling a player their room can't hold the deck **before** the set starts.
+  Neither exemplar does it, the platform supports it, and it's a fraction of the
+  work of adapting.
+- **Foot fences on the deck.** A purely visual affordance that makes a wrong
+  move feel like more effort without preventing anything. Our club teleport
+  already has the *stop* version (the marker burns hazard-red on an invalid
+  landing); the fence is the *don't bother* version, and it's gentler. Worth
+  knowing we have no gentle discouragements at all right now — everything is a
+  hard rule or nothing.
 
 ---
 
@@ -504,7 +604,7 @@ you dominate), inverse *translation on a beat*.
 
 ## Sources
 
-- [The Hidden Design Behind the Ingenious Room-Scale Gameplay in 'Eye of the Temple' — Road to VR](https://www.roadtovr.com/eye-of-the-temple-design-room-scale-vr-gameplay/)
+- **Primary, read in full:** Rune Skovbo Johansen, [*The Hidden Design Behind the Ingenious Room-Scale Gameplay in 'Eye of the Temple'*](https://www.roadtovr.com/eye-of-the-temple-design-room-scale-vr-gameplay/) (Road to VR guest article, 17 May 2023, [page 2](https://www.roadtovr.com/eye-of-the-temple-design-room-scale-vr-gameplay/2/)) · [*Approachable and Immersive Design in 'Eye of the Temple'*](https://developers.meta.com/horizon/blog/eye-of-the-temple-vr-immersion-game-design/) (Meta developer blog) · [*The Origins and Inspirations of 'Eye of the Temple'*](https://www.meta.com/blog/eye-of-the-temple-vr-meta-quest-2-platformer/) (Meta Quest blog) · [Developing Eye of the Temple with LIV](https://www.liv.tv/blog/developing-eye-of-the-temple-with-liv-game-developer-insight)
 - [Behind the design of Eye of the Temple — runevision blog](https://blog.runevision.com/2023/05/behind-the-design-of-eye-of-the-temple-out-on-quest-2.html)
 - [Eye of the Temple — official site](https://eyeofthetemple.com/) · [FAQ](https://eyeofthetemple.com/faq.html)
 - [Eye Of The Temple Review: A Triumphant Room-Scale Adventure — UploadVR](https://www.uploadvr.com/eye-of-the-temple-review/)

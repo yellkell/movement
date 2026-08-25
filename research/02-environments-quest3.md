@@ -10,6 +10,16 @@ shader-bound. You are **draw-call bound, bandwidth bound, and texture-memory
 bound**, and the wins come from *structure* — batching, instancing, layering,
 and lighting that was computed before the app started.
 
+> **Sourcing caveat.** The Meta and Qualcomm documentation this note leans on is
+> blocked by this session's egress policy — including from a headless browser,
+> which hits the same proxy — so the numbers and guidance below come from
+> domain-scoped search over those pages rather than from reading them. Treat the
+> figures as directionally right and worth confirming. Everything drawn from
+> `yellkell/dance` is first-hand, and the Eye of the Temple quotes are from the
+> primary articles. Unblocking `developers.meta.com` and `docs.qualcomm.com` is
+> what would put this file on the same footing as
+> [`03`](03-eye-of-the-temple.md).
+
 ---
 
 ## 1. The machine you're actually rendering on
@@ -309,13 +319,30 @@ scenery*. In a game where the floor is the instruction, art direction has to
 be able to get out of the way on cue. This is a systems requirement, not a
 polish pass — the environment needs an `energy` input from day one.
 
-**Occlusion is a level-design job, not just an engine feature.** The Eye of
-the Temple Quest port is the cautionary tale: the team **built their own manual
-occlusion system** on top of Unity's, disabling parts of the world according to
-**manually defined boundaries**, because an expansive world put pressure on
-everything else. They also had to **reimplement lighting and water from
-scratch** to keep the aesthetic on mobile. Budget for the fact that a big
-space's *real* cost is submitting the parts you can't see.
+**Occlusion is a level-design job, not just an engine feature.** The Eye of the
+Temple Quest port is the cautionary tale, in Johansen's own words:
+
+> *"Getting the large environments in the game to run at target frame rate was
+> one of the primary challenges in bringing the game to Quest 2. In fact, I
+> didn't even want to attempt a Quest 2 version before I found a partner to work
+> with who already had a lot of experience developing for that platform… We had
+> to create our own manual occlusion system to supplement Unity's built-in
+> solution in order to support the game's expansive world. The new system
+> disables parts of the world that currently aren't visible anyway, according to
+> manually defined boundaries. The large environments also put pressure on
+> everything else in the game, so we had to optimize certain things further than
+> would be needed in other Quest 2 games… a lot of the game's visuals — such as
+> the lighting and water effects — had to be reimplemented from scratch in order
+> to retain the same aesthetic on mobile hardware."*
+
+Three things to take from that. A big open space's *real* cost is submitting the
+parts you can't see, and the shipping-quality answer was **hand-authored culling
+volumes**, not a cleverer renderer. The environment budget is not local — large
+environments *"put pressure on everything else"*, so the cost shows up in
+systems that have nothing to do with scenery. And a solo developer with five
+years in the project **would not attempt the port without a partner who already
+knew the platform** — which is the most honest sentence about mobile VR
+optimisation in any of this material.
 
 ---
 
