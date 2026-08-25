@@ -26,8 +26,8 @@ diegetic: a stepwell is a vertical temple that ends in water, so the mirror
 floor and the free vertical dimension are the building itself. Every design
 decision is traced back to these notes in
 [`stepwell/DESIGN.md`](stepwell/DESIGN.md), and a headless probe walks the
-mechanic and holds the frame to the `02` budgets (26/26 checks; 22 draw
-calls, ~10.5 k triangles).
+mechanic and holds the frame to the `02` budgets (26/26 checks; 23 draw
+calls, ~13 k triangles).
 
 ## The notes
 

@@ -1,0 +1,63 @@
+name: Deploy STEPWELL to Pages
+
+on:
+  push:
+    branches:
+      - main
+      - claude/iwsdk-research-experience-elinqr
+    paths:
+      - 'stepwell/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# Pages needs id-token to publish; contents:read is all the build wants.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a newer push supersede an in-flight one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: stepwell
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12'
+          cache: npm
+          cache-dependency-path: stepwell/package-lock.json
+
+      - run: npm ci
+
+      # Cheap gate: a build that typechecks is a build worth publishing.
+      - run: npm run typecheck
+
+      - run: npm run build
+
+      # Vite emits ./assets/... relative URLs, so the app runs from the
+      # project subpath (/movement/) unchanged. .nojekyll keeps Pages from
+      # touching the output.
+      - run: touch dist/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: stepwell/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

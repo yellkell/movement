@@ -139,7 +139,7 @@ light, and amber→red belongs to gameplay alone. Everything repeated is an
 input dims scenery while a telegraph owns the deck (danger never competes
 with scenery) and blooms with flow.
 
-**Measured by the probe, per the 02 checklist: 22 draw calls, ~10.5 k
+**Measured by the probe, per the 02 checklist: 23 draw calls, ~13.3 k
 triangles** — against budgets of ≤ 60 and ≤ 100 k. (dance's whole set world
 is 48 draws; the well is leaner still.)
 
