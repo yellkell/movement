@@ -1,9 +1,10 @@
 # movement
 
-Research on VR movement mechanics and environment craft. **Nothing is being
-built here yet** — this is the map before the build.
+Research on VR movement mechanics and environment craft — and now the build
+the map was drawn for: **[STEPWELL](stepwell/)**, a rhythm descent for a
+2 × 2 m room, built on the Immersive Web SDK.
 
-Two questions drive it:
+Two questions drive the research:
 
 1. **How do you move a body through a virtual world?** — with an eye on the two
    games that answer it best (*Eye of the Temple*, *Spellbound Spire*), what
@@ -11,6 +12,22 @@ Two questions drive it:
    gives us.
 2. **How do you build a beautiful space that costs almost nothing?** — on
    standalone Quest 3, in WebXR, at 90 Hz.
+
+## The build
+
+[`stepwell/`](stepwell/) is the experience the notes kept pointing at — the
+combination `01 §5` names as the empty design space: **dynamic room-scale on
+a rhythm grid, the floor itself as a move.** One tracked platform pins the
+play area to the world; platforms run on bar-quantized loops; every traversal
+is a pair of opposed steps netting to zero; gates mid-ride ask for duck and
+dodge on moving ground — Johansen's own two unbuilt verbs, in dance's
+telegraph language. The environment is the `02` techniques ladder made
+diegetic: a stepwell is a vertical temple that ends in water, so the mirror
+floor and the free vertical dimension are the building itself. Every design
+decision is traced back to these notes in
+[`stepwell/DESIGN.md`](stepwell/DESIGN.md), and a headless probe walks the
+mechanic and holds the frame to the `02` budgets (26/26 checks; 22 draw
+calls, ~10.5 k triangles).
 
 ## The notes
 

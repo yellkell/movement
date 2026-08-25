@@ -1,0 +1,27 @@
+{
+  "name": "stepwell",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "probe": "node probe/run.mjs"
+  },
+  "dependencies": {
+    "@iwsdk/core": "0.5.3",
+    "iwer": "^2.3.0",
+    "three": "npm:super-three@0.181.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.181.0",
+    "playwright-core": "^1.49.0",
+    "typescript": "^5.5.0",
+    "vite": "^7.1.4"
+  },
+  "engines": {
+    "node": ">=20.19.0 <21.0.0-0 || >=22.12.0 <23.0.0-0 || >=24.0.0"
+  }
+}
