@@ -1,8 +1,10 @@
 # movement
 
-Research on VR movement mechanics and environment craft — and now the build
+Research on VR movement mechanics and environment craft — and the builds
 the map was drawn for: **[STEPWELL](stepwell/)**, a rhythm descent for a
-2 × 2 m room, built on the Immersive Web SDK.
+2 × 2 m room, built on the Immersive Web SDK — and now
+**[VOIDSTEP](voidstep/)**, the consolidation with `dance`: a parkour
+circuit through RAVE RAID's void.
 
 Two questions drive the research:
 
@@ -31,6 +33,23 @@ calls, ~20 k triangles). Now wound into a full descent-and-return: the
 relay, the paternoster, the mill you walk like a crank, call plates, the
 gauntlet — and the ember, carried up from the water, relighting the well
 storey by storey.
+
+[`voidstep/`](voidstep/) consolidates the two houses into one experience:
+stepwell's tracked-platform mechanic **simplified** — the forced-switch
+slide correction is deleted outright; handover is clean or it is a slip,
+and the world never moves under your feet except by riding — inside
+**dance's abstract environment**, cloned whole (`voidkit`: the mirror
+floor, the tower rings, the skyline, the truss, the arcs, the dust, the
+horizon). A **parkour circuit** of moving platforms rides out, up and
+across the void and home, ledger closed — and **dance's attacks** (beam,
+rail, seesaw, surge, gate, sweep, in the same amber→red telegraph
+language, same charge times, same laws) land on the decks mid-ride to
+keep the body moving: Johansen's two unbuilt verbs, extended to dance's
+whole verb table, on ground that is itself in motion. The two games now
+share one grammar. Its probe rides the entire circuit — the slip law,
+the six-move volley, the closed ledger, the budgets — 38/38 checks; 56
+draw calls, ~29 k triangles. The story is traced decision-by-decision in
+[`voidstep/DESIGN.md`](voidstep/DESIGN.md).
 
 ## The notes
 

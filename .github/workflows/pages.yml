@@ -1,4 +1,4 @@
-name: Deploy STEPWELL to Pages
+name: Deploy STEPWELL + VOIDSTEP to Pages
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - claude/iwsdk-research-experience-elinqr
     paths:
       - 'stepwell/**'
+      - 'voidstep/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -25,9 +26,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: stepwell
     steps:
       - uses: actions/checkout@v4
 
@@ -35,23 +33,39 @@ jobs:
         with:
           node-version: '22.12'
           cache: npm
-          cache-dependency-path: stepwell/package-lock.json
-
-      - run: npm ci
+          cache-dependency-path: |
+            stepwell/package-lock.json
+            voidstep/package-lock.json
 
       # Cheap gate: a build that typechecks is a build worth publishing.
+      - run: npm ci
+        working-directory: stepwell
       - run: npm run typecheck
-
+        working-directory: stepwell
       - run: npm run build
+        working-directory: stepwell
 
-      # Vite emits ./assets/... relative URLs, so the app runs from the
-      # project subpath (/movement/) unchanged. .nojekyll keeps Pages from
+      - run: npm ci
+        working-directory: voidstep
+      - run: npm run typecheck
+        working-directory: voidstep
+      - run: npm run build
+        working-directory: voidstep
+
+      # One site: the well at the root (its historical home), the circuit
+      # under /voidstep/. Vite emits ./assets/... relative URLs, so both
+      # apps run from their subpaths unchanged. .nojekyll keeps Pages from
       # touching the output.
-      - run: touch dist/.nojekyll
+      - run: |
+          mkdir -p site
+          cp -r stepwell/dist/. site/
+          mkdir -p site/voidstep
+          cp -r voidstep/dist/. site/voidstep/
+          touch site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: stepwell/dist
+          path: site
 
   deploy:
     # The github-pages environment only accepts the default branch; branch

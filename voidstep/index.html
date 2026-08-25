@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="icon" href="data:," />
+    <title>VOIDSTEP</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #000;
+        overflow: hidden;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+      }
+      #scene-container {
+        position: fixed;
+        inset: 0;
+      }
+      #hud {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        pointer-events: none;
+        color: #e8a2ff;
+        text-shadow: 0 0 8px #2a0438;
+        user-select: none;
+      }
+      #hud .hint {
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        opacity: 0.75;
+      }
+      #enter-vr {
+        pointer-events: auto;
+        background: #16061d;
+        color: #ff5ad1;
+        border: 1px solid #5e1454;
+        border-radius: 4px;
+        padding: 10px 26px;
+        font-size: 15px;
+        letter-spacing: 0.22em;
+        cursor: pointer;
+      }
+      #enter-vr:hover {
+        background: #280a30;
+      }
+      #enter-vr[hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scene-container"></div>
+    <div id="hud">
+      <button id="enter-vr" hidden>ENTER THE VOID</button>
+      <div class="hint" id="hint"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
