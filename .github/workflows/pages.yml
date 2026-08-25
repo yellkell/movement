@@ -16,9 +16,10 @@ permissions:
   pages: write
   id-token: write
 
-# Never let two deploys race; let a newer push supersede an in-flight one.
+# Per-ref groups: a branch build can never cancel a main deploy; a newer
+# push to the same ref supersedes an in-flight one.
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -53,6 +54,9 @@ jobs:
           path: stepwell/dist
 
   deploy:
+    # The github-pages environment only accepts the default branch; branch
+    # pushes still run the build as CI, but skip the deploy cleanly.
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
