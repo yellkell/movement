@@ -1,16 +1,22 @@
 # STEPWELL
 
-**The well does the walking.** A rhythm descent for a 2 × 2 m room — dynamic
-room-scale locomotion (Eye of the Temple's frame-of-reference mechanic) on a
-musical grid, built on the Immersive Web SDK (`@iwsdk/core`). The design
-rationale, mapped line-by-line to the research in
-[`../research/`](../research/), is in [`DESIGN.md`](DESIGN.md).
+**The well went dark — bring the light up from the water.** A rhythm
+descent-and-return for a 2 × 2 m room — dynamic room-scale locomotion (Eye
+of the Temple's frame-of-reference mechanic) on a musical grid, built on the
+Immersive Web SDK (`@iwsdk/core`). The design rationale, mapped
+line-by-line to the research in [`../research/`](../research/), is in
+[`DESIGN.md`](DESIGN.md).
 
-You never leave your room and you never touch a stick. Platforms run on set
-loops quantized to bars; you sidestep on, the well slides past your still
-body, you sidestep off — every traversal a pair of opposed steps that nets to
-zero. Mid-ride the architecture asks for the two embodied verbs: duck the low
-light, keep a lane free. At the water, the set begins again.
+You never leave your room and you never touch a stick. Ferries, an
+elevator, a mid-air relay, a two-column paternoster, a drum you walk like a
+crank and a raft wind you down the trench's east side to the water; the
+ember rises for a held stand, and the west side carries you home while
+every storey you pass takes the light back. Corner posts count each
+departure down beat by beat; a breathing circle shows the next ground;
+berth brackets mark ground still on its way. Duck the low light, keep a
+lane free, stand the glyph to summon the slow machines — and dock the
+ember to light a brazier and begin again. The loop is geometrically
+closed: the ascent ends on the anchor the descent left.
 
 ## Run it
 

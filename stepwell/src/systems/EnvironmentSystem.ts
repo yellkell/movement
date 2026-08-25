@@ -13,7 +13,7 @@ import {
 } from '@iwsdk/core';
 
 const _camPos = new Vector3();
-import { COLOR, ENERGY, WELL } from '../config';
+import { COLOR, EMBER, ENERGY, WELL } from '../config';
 import { conductor } from '../conductor';
 import { Bank, mirrorOf, shadedBoxGeometry } from '../lib/banks';
 import { applyDim, registerDim } from '../lib/dimmer';
@@ -31,7 +31,11 @@ import { G } from '../state';
 // is an instanced bank animated through per-instance colour.
 export class EnvironmentSystem extends createSystem({}) {
   private windows!: Bank;
-  private windowCount = 0;
+  private rings: { y: number; start: number; end: number }[] = [];
+  private brazierStart = 0;
+  private brazierPos: { x: number; y: number; z: number }[] = [];
+  /** Storey heights, lowest ring last; EmberSystem lights them by index. */
+  ringYs: number[] = [];
   private dust!: Points;
   private dustBase!: Float32Array;
   private waterMat!: MeshBasicMaterial;
@@ -60,7 +64,9 @@ export class EnvironmentSystem extends createSystem({}) {
     // architecture on.
     const ringYs: number[] = [];
     for (let y = 2.6; y > WELL.waterY - 0.3; y -= WELL.storey) ringYs.push(y);
+    this.ringYs = ringYs;
     for (const y of ringYs) {
+      const ringStart = this.windows.count;
       // Long side galleries.
       for (const sign of [1, -1]) {
         const wx = sign * (WELL.halfX + 0.4);
@@ -129,6 +135,7 @@ export class EnvironmentSystem extends createSystem({}) {
           );
         }
       }
+      this.rings.push({ y, start: ringStart, end: this.windows.count });
     }
 
     // Columns: full-height ribs — the silhouette scale.
@@ -173,7 +180,17 @@ export class EnvironmentSystem extends createSystem({}) {
       );
     }
 
-    this.windowCount = this.windows.count;
+    // The braziers: one lit per completed lap, on the far mouth rim so the
+    // purpose is part of the vista you descend toward.
+    this.brazierStart = this.windows.count;
+    for (let i = 0; i < EMBER.braziers; i++) {
+      const x = -2.5 + i;
+      const bp = { x, y: WELL.mouthY + 0.62, z: WELL.zFar - 0.7 };
+      this.brazierPos.push(bp);
+      structure.add(bp.x, bp.y - 0.25, bp.z, 0.12, 0.34, 0.12, 0x1a2030);
+      this.windows.add(bp.x, bp.y, bp.z, 0.16, 0.16, 0.16, 0xff9a3c);
+    }
+
     this.scene.add(structure.mesh, this.windows.mesh);
 
     // 1. The mirror. One extra draw per bank; the reflection animates free.
@@ -268,12 +285,13 @@ export class EnvironmentSystem extends createSystem({}) {
     const panel = textPanel({
       title: 'STEPWELL',
       lines: [
-        'THE WELL DOES THE WALKING',
-        'STEP WHEN RIMS GLOW CYAN',
-        'NEVER STEP ON RED',
-        'DUCK THE LOW LIGHT',
+        'THE WELL WENT DARK',
+        'BRING THE LIGHT UP FROM THE WATER',
+        'STEP ON CYAN — NEVER ON RED',
+        'CORNERS COUNT YOU DOWN',
+        'DUCK THE LOW LIGHT · KEEP A LANE FREE',
       ],
-      small: 'squeeze & hold — or G — to see how the well thinks',
+      small: 'stand where the circle breathes — squeeze & hold (or G) to see how the well thinks',
       width: 1.9,
     });
     // Off the descent axis and angled in, so the forward vista — the well
@@ -282,6 +300,11 @@ export class EnvironmentSystem extends createSystem({}) {
     panel.rotation.y = -0.28;
     registerDim(panel.material as MeshBasicMaterial, 'gameplay');
     this.scene.add(panel);
+  }
+
+  /** Where the next unlit brazier waits for the ember. */
+  brazierAnchor(): { x: number; y: number; z: number } | undefined {
+    return this.brazierPos[Math.min(G.laps, this.brazierPos.length - 1)];
   }
 
   showPlayAreaWarning(widthM: number, depthM: number): void {
@@ -313,17 +336,35 @@ export class EnvironmentSystem extends createSystem({}) {
     G.energy += (target - G.energy) * Math.min(1, dt * ENERGY.ease);
     applyDim(G.energy, G.fade);
 
-    // Pinprick pulse: portholes breathe with the beat through instance colour
-    // — the whole animated light show stays one draw (research/02 §3).
+    // Pinprick pulse through instance colour — one draw for the whole light
+    // show (research/02 §3). The well starts in gloom; a storey the ember
+    // has reached burns warm and bright for the rest of the lap.
     const beat = G.transport.beat;
     const phase = G.transport.barPhase * 4 - beat;
-    for (let i = 0; i < this.windowCount; i++) {
-      const mine = i % 4 === beat;
-      const glow = mine ? 1.1 + 0.5 * (1 - phase) : 0.75;
+    for (let r = 0; r < this.rings.length; r++) {
+      const lit = G.storeysLit[r] === true;
+      const ring = this.rings[r];
+      for (let i = ring.start; i < ring.end; i++) {
+        const mine = i % 4 === beat;
+        const pulse = mine ? 1.15 + 0.5 * (1 - phase) : 0.8;
+        if (lit) {
+          this.windows.color(i, i % 2 === 0 ? 0xffb367 : 0xffc98d, pulse * 1.35);
+        } else {
+          this.windows.color(
+            i,
+            i % 2 === 0 ? COLOR.window : COLOR.windowWarm,
+            pulse * 0.5,
+          );
+        }
+      }
+    }
+    for (let i = 0; i < this.brazierPos.length; i++) {
+      const idx = this.brazierStart + i;
+      const litB = i < G.laps;
       this.windows.color(
-        i,
-        i % 2 === 0 ? COLOR.window : COLOR.windowWarm,
-        glow,
+        idx,
+        0xff9a3c,
+        litB ? 1.4 + 0.24 * Math.sin(G.transport.bars * Math.PI * 2.5 + i) : 0.05,
       );
     }
 

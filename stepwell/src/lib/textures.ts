@@ -46,6 +46,57 @@ export function patternTexture(): CanvasTexture {
   return tex;
 }
 
+/** Soft radial glow — the invitation circle, the ember's body. */
+export function glowTexture(): CanvasTexture {
+  const size = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d')!;
+  const grad = g.createRadialGradient(
+    size / 2,
+    size / 2,
+    0,
+    size / 2,
+    size / 2,
+    size / 2,
+  );
+  grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+  grad.addColorStop(0.35, 'rgba(255,255,255,0.5)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, size, size);
+  const tex = new CanvasTexture(c);
+  tex.minFilter = LinearMipmapLinearFilter;
+  return tex;
+}
+
+/** The call-plate glyph: a ring with an inner dot — stand here, hold. */
+export function glyphTexture(): CanvasTexture {
+  const size = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d')!;
+  g.clearRect(0, 0, size, size);
+  g.strokeStyle = 'rgba(255,255,255,0.9)';
+  g.lineWidth = size * 0.06;
+  g.beginPath();
+  g.arc(size / 2, size / 2, size * 0.36, 0, Math.PI * 2);
+  g.stroke();
+  g.setLineDash([size * 0.05, size * 0.05]);
+  g.lineWidth = size * 0.025;
+  g.beginPath();
+  g.arc(size / 2, size / 2, size * 0.22, 0, Math.PI * 2);
+  g.stroke();
+  g.setLineDash([]);
+  g.fillStyle = 'rgba(255,255,255,0.85)';
+  g.beginPath();
+  g.arc(size / 2, size / 2, size * 0.06, 0, Math.PI * 2);
+  g.fill();
+  const tex = new CanvasTexture(c);
+  tex.minFilter = LinearMipmapLinearFilter;
+  return tex;
+}
+
 export interface PanelSpec {
   title?: string;
   lines: string[];

@@ -139,7 +139,7 @@ light, and amber→red belongs to gameplay alone. Everything repeated is an
 input dims scenery while a telegraph owns the deck (danger never competes
 with scenery) and blooms with flow.
 
-**Measured by the probe, per the 02 checklist: 23 draw calls, ~13.3 k
+**Measured by the probe, per the 02 checklist: 31 draw calls, ~20 k
 triangles** — against budgets of ≤ 60 and ≤ 100 k. (dance's whole set world
 is 48 draws; the well is leaner still.)
 
@@ -189,4 +189,103 @@ checked against the live app):
 - an emulated-headset pass (IWER): real `immersive-vr` session, handover
   driven by walking the emulated head across the play area
 
-26/26 checks pass at time of writing.
+37/37 checks pass at time of writing.
+
+---
+
+# The Winding (v2)
+
+Headset testing surfaced two findings and an appetite: the countdown could
+hide behind its own platform, aiming the body at ground that hadn't arrived
+yet was guesswork, and the well wanted to be longer and to mean something.
+v2 answers all three.
+
+## Legibility: the countdown no angle can hide
+
+The rim-fill was correct but occludable — 3.5 cm strips flat on the deck,
+sometimes behind the fence rails, invisible edge-on. The countdown now lives
+in three places at once, all redundant, none occludable together:
+
+1. **Corner posts** — four pillars per tile; in the final dwell bar they
+   blaze amber and one extinguishes per beat. Vertical, so they read
+   edge-on, from below, and over the fences. Departure is four dead posts.
+2. **Wrapping rims** — the strips now wrap the deck's edge (9 cm tall,
+   proud of the slab) instead of lying on top of it: visible from the side
+   and from beneath, and never behind their own deck.
+3. **The deck wash** — the whole top face pulses amber, brightening through
+   the final bar. The floor is the instruction on the surface you actually
+   look at (research/01 §3).
+4. And it is audible: a click per beat of the final bar, pitch climbing,
+   for the ground you own or the ground you're being invited onto.
+
+## Wayfinding: aim the body before the ground exists
+
+- **The invitation** — a breathing circle of light on the next tile of the
+  route whenever that ground is present and steppable; it pulses fast and
+  turns amber when that ground is about to leave. At boot it sits under
+  your own feet: begin here.
+- **The berth** — dim corner brackets marking where the route's next
+  machine will dock, shown only while it is away. You wait facing ground
+  that is *coming*.
+- Like the fences, neither prevents anything (research/03 §2.4).
+
+## The machines
+
+The route now winds down the trench's east side and back up its west, and
+the loop is **geometrically closed**: the ascent returns to the exact anchor
+the descent left, so rebirth resets only the clock — never the body.
+
+- **The relay** — two ferries meeting mid-well on a shared dwell; you
+  transfer machine-to-machine in the middle of the air. The shared-anchor
+  algebra makes it free.
+- **The paternoster** — three cars cycling two columns: down the east,
+  across, up the west. One-bar dwells at four stops; a door opens every
+  four bars. Descend it early; ascend the far column later — the same
+  machine, met twice (Ico's backtracking, research/03 §8).
+- **The mill** — the research's sharpest unbuilt idea (research/03 §8),
+  built as a crank: a drum whose claim drifts two squares of *real floor*
+  north as its anchor advances through the world, and it grinds **only
+  while you walk it** — drift accrues from time-on-tile, never from the
+  clock. The walking visibly raises the portcullis you then step through.
+  A real two-square walk, consumed and repaid by the surrounding steps.
+- **Call plates** — the slow machines answer a summons: stand the glyph two
+  beats and the target's loop rephases so its boarding dwell starts next
+  bar. An interface *inside* the world (research/03 §5), because waiting
+  out a 28-bar loop is patience, not gameplay.
+- **The gauntlet** — the beam barge, promoted to the ascent's finale: four
+  gates in six bars, dodge–duck–dodge–dodge, spaced so consecutive opposite
+  demands never overlap — one ask per beat-ish, a dodge is a move, never a
+  coin-flip.
+
+## The purpose
+
+The well starts in gloom. At the water, standing the raft two bars raises
+**the ember**; it rides above whatever ground owns the frame. Every storey
+the rig reaches while carrying it **relights** — parapets and portholes
+turning warm, a bell per storey — and docking it at the threshold lights a
+**brazier** on the far mouth rim, one per lap, then the throat closes and
+the well begins again. The music knows: the drone climbs back up with you,
+the hats brighten while the ember is held, the mill's pawl clicks as you
+walk, the summons is answered with a horn.
+
+## What building it taught (and encoded)
+
+The mill's finished tile parked on the same square the raft claimed, and
+tracking followed the mill instead of the raft — exactly the class of bug
+the ghost overlays exist to make visible. Auditing found three more latent
+deck overlaps (ferry-west vs the plate square, the cars vs the gauntlet's
+lane, the gauntlet vs the home ferry). All four were re-authored, and
+`validateScore()` now refuses to boot a score where any two platforms can
+ever park decks on the same world spot — the ghost-overlay discipline is
+executable twice over: routed handovers must share an anchor, and claims
+must never collide.
+
+## Verification, v2
+
+The probe now walks the entire winding: the v1 mechanism checks, then the
+relay transfer, a paternoster descent and ascent (both columns), the mill
+(including that it stalls when you step off), a plate summons, the ember
+rise, storey relights, the gauntlet ridden clean through four gates, the
+home ferry, the dock, and the rebirth to bar zero with every lap-state
+reset. **37/37 checks; 31 draw calls, ~20 k triangles** — still far inside
+the research/02 budgets of 60 and 100 k.

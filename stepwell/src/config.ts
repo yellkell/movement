@@ -104,3 +104,30 @@ export const BUDGET = {
   maxDrawCalls: 60,
   maxTriangles: 100_000,
 };
+
+export const COUNTDOWN = {
+  // The corner posts are the countdown you can't miss: vertical, so they
+  // read edge-on, from below, and over the fences — everywhere the rim
+  // strips could hide. One extinguishes per beat of the final dwell bar.
+  postIdle: 0.05,
+  postWarn: 0.34,
+  postSize: 0.05,
+};
+
+export const MILL = {
+  bars: 6, // full walk at steady pace; the drum only grinds while you walk
+  rewind: 0.25, // fraction of walk speed the drum rolls back when abandoned
+};
+
+export const EMBER = {
+  hover: 2.35, // metres above the tracked deck
+  standBars: 2, // stand the water this long and the ember rises
+  riseBars: 2,
+  dockBars: 2,
+  braziers: 6,
+};
+
+export const WAYFIND = {
+  breathBars: 1, // the invitation circle breathes once per bar
+  berthPulse: 0.35,
+};

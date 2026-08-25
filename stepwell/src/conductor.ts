@@ -25,6 +25,9 @@ export class Conductor {
   private depth01 = 0;
   private arpLevel = 0;
 
+  /** While the ember is carried the whole mix brightens a shade. */
+  emberHeld = false;
+
   get barPhase(): number {
     return this.bars - Math.floor(this.bars);
   }
@@ -159,9 +162,10 @@ export class Conductor {
     s.buffer = this.noiseBuf;
     const hp = ctx.createBiquadFilter();
     hp.type = 'highpass';
-    hp.frequency.value = 8200;
+    hp.frequency.value = this.emberHeld ? 7200 : 8200;
     const g = ctx.createGain();
-    g.gain.setValueAtTime(off ? 0.05 : 0.09, at);
+    const base = off ? 0.05 : 0.09;
+    g.gain.setValueAtTime(this.emberHeld ? base * 1.35 : base, at);
     g.gain.exponentialRampToValueAtTime(0.001, at + 0.05);
     s.connect(hp).connect(g).connect(this.master);
     s.start(at);
@@ -210,6 +214,107 @@ export class Conductor {
     m.start(at);
     o.stop(at + 0.75);
     m.stop(at + 0.75);
+  }
+
+  /** Departure countdown click; pitch climbs as beats run out. */
+  tick(beatsLeft: number): void {
+    if (!this.ready()) return;
+    const ctx = this.ctx!;
+    const at = ctx.currentTime + 0.005;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'square';
+    o.frequency.value = 900 + (4 - Math.min(4, beatsLeft)) * 180;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 2100;
+    bp.Q.value = 5;
+    g.gain.setValueAtTime(0.07, at);
+    g.gain.exponentialRampToValueAtTime(0.001, at + 0.06);
+    o.connect(bp).connect(g).connect(this.master);
+    o.start(at);
+    o.stop(at + 0.07);
+  }
+
+  /** A call plate answered: the machine acknowledges from below. */
+  horn(): void {
+    if (!this.ready()) return;
+    const ctx = this.ctx!;
+    const at = ctx.currentTime + 0.01;
+    const root = 110 * Math.pow(2, (-7 / 12) * this.depth01);
+    for (const [mult, gain] of [
+      [1, 0.16],
+      [1.5, 0.09],
+    ]) {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(root * mult * 0.94, at);
+      o.frequency.linearRampToValueAtTime(root * mult, at + 0.25);
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.linearRampToValueAtTime(gain, at + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.001, at + 1.1);
+      o.connect(g).connect(this.master);
+      o.start(at);
+      o.stop(at + 1.2);
+    }
+  }
+
+  /** A storey takes the light: one deep bell. */
+  bell(step: number): void {
+    if (!this.ready()) return;
+    const ctx = this.ctx!;
+    const at = ctx.currentTime + 0.01;
+    const penta = [0, 3, 5, 7, 10];
+    const f = 220 * Math.pow(2, penta[step % penta.length] / 12);
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = f;
+    const m = ctx.createOscillator();
+    const mg = ctx.createGain();
+    m.frequency.value = f * 1.41; // inharmonic partial: bell, not chime
+    mg.gain.value = 160;
+    m.connect(mg).connect(o.frequency);
+    g.gain.setValueAtTime(0.17, at);
+    g.gain.exponentialRampToValueAtTime(0.001, at + 1.8);
+    o.connect(g).connect(this.master);
+    o.start(at);
+    m.start(at);
+    o.stop(at + 1.9);
+    m.stop(at + 1.9);
+  }
+
+  /** The mill's pawl clicks as the walk advances a notch. */
+  millTick(notch: number): void {
+    if (!this.ready()) return;
+    const ctx = this.ctx!;
+    const at = ctx.currentTime + 0.005;
+    const s = ctx.createBufferSource();
+    s.buffer = this.noiseBuf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 500 + notch * 90;
+    bp.Q.value = 8;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.22, at);
+    g.gain.exponentialRampToValueAtTime(0.001, at + 0.09);
+    s.connect(bp).connect(g).connect(this.master);
+    s.start(at);
+    s.stop(at + 0.1);
+  }
+
+  /** The ember rises or docks: a slow warm swell over the drone. */
+  swell(): void {
+    if (!this.ready()) return;
+    const ctx = this.ctx!;
+    const now = ctx.currentTime;
+    this.droneGain.gain.cancelScheduledValues(now);
+    this.droneGain.gain.setValueAtTime(this.droneGain.gain.value, now);
+    this.droneGain.gain.linearRampToValueAtTime(0.11, now + 1.2);
+    this.droneGain.gain.linearRampToValueAtTime(0.05, now + 4.5);
+    this.chime(0);
+    this.chime(2);
   }
 
   thud(): void {

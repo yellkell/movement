@@ -69,8 +69,8 @@ export class FrameOfReferenceSystem extends createSystem({}) {
       if (Math.abs(st.anchor.y - rig.y) > 1.2) continue; // a storey away is not ground
       const half =
         GRID.tile / 2 + (i === G.tracked ? RIG.trackedOutset : -RIG.tileInset);
-      const ox = st.anchor.x - rig.x;
-      const oz = st.anchor.z - rig.z;
+      const ox = st.anchor.x - rig.x + st.claimShift.x;
+      const oz = st.anchor.z - rig.z + st.claimShift.z;
       for (const sq of PLATFORMS[i].claim) {
         const o = sqOffset(sq);
         const dx = hx - (ox + o.x);
@@ -108,6 +108,7 @@ export class FrameOfReferenceSystem extends createSystem({}) {
       // Clean handover: anchors agree, the rig does not move.
       logEvent(`switch:${PLATFORMS[G.tracked].id}->${PLATFORMS[owner].id}:clean`);
       G.tracked = owner;
+      G.handovers++;
       this.candidate = -1;
       this.candidateFrames = 0;
       return;
@@ -120,7 +121,7 @@ export class FrameOfReferenceSystem extends createSystem({}) {
     // and must take the frame with it: forced switch, slide correction.
     const now = Math.hypot(cand.anchor.x - rig.x, cand.anchor.z - rig.z) +
       Math.abs(cand.anchor.y - rig.y);
-    anchorAt(PLATFORMS[owner], G.transport.bars + 0.25, this.look);
+    anchorAt(PLATFORMS[owner], G.transport.bars + 0.25, this.look, cand.phaseShift);
     const soon =
       Math.hypot(this.look.x - rig.x, this.look.z - rig.z) +
       Math.abs(this.look.y - rig.y);
@@ -132,6 +133,7 @@ export class FrameOfReferenceSystem extends createSystem({}) {
     corr.active = true;
     logEvent(`switch:${PLATFORMS[G.tracked].id}->${PLATFORMS[owner].id}:slide`);
     G.tracked = owner;
+    G.handovers++;
     this.candidate = -1;
     this.candidateFrames = 0;
   }

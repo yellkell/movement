@@ -7,15 +7,19 @@
 
 import { Color, SessionMode, World } from '@iwsdk/core';
 import { conductor } from './conductor';
+import { PLATFORMS, validateScore } from './score';
 import { G } from './state';
 import { BodySystem } from './systems/BodySystem';
+import { CallPlateSystem } from './systems/CallPlateSystem';
 import { ConductorSystem } from './systems/ConductorSystem';
 import { DesktopPreviewSystem } from './systems/DesktopPreviewSystem';
+import { EmberSystem } from './systems/EmberSystem';
 import { EnvironmentSystem } from './systems/EnvironmentSystem';
 import { FrameOfReferenceSystem } from './systems/FrameOfReferenceSystem';
 import { HazardSystem } from './systems/HazardSystem';
 import { PlatformSystem } from './systems/PlatformSystem';
 import { ValidationSystem } from './systems/ValidationSystem';
+import { WayfindSystem } from './systems/WayfindSystem';
 
 const params = new URLSearchParams(location.search);
 const PROBE = params.has('probe');
@@ -50,14 +54,18 @@ async function boot(): Promise<void> {
 
   world.scene.background = new Color(0x000000);
 
+  validateScore();
   world
     .registerSystem(ConductorSystem, { priority: 10 })
     .registerSystem(BodySystem, { priority: 11 })
     .registerSystem(PlatformSystem, { priority: 12 })
     .registerSystem(FrameOfReferenceSystem, { priority: 13 })
     .registerSystem(HazardSystem, { priority: 14 })
-    .registerSystem(EnvironmentSystem, { priority: 15 })
-    .registerSystem(ValidationSystem, { priority: 16 });
+    .registerSystem(CallPlateSystem, { priority: 15 })
+    .registerSystem(WayfindSystem, { priority: 16 })
+    .registerSystem(EmberSystem, { priority: 17 })
+    .registerSystem(EnvironmentSystem, { priority: 18 })
+    .registerSystem(ValidationSystem, { priority: 19 });
   if (!PROBE) world.registerSystem(DesktopPreviewSystem, { priority: 9 });
 
   wireDom(world);
@@ -95,6 +103,8 @@ function exposeProbe(world: World): void {
     world,
     G,
     conductor,
+    ids: PLATFORMS.map((p) => p.id),
+    claims: PLATFORMS.map((p) => p.claim.map((sq) => [sq[0], sq[1]])),
     step(n = 1, dt = 1 / 72): void {
       for (let i = 0; i < n; i++) {
         time += dt;
@@ -108,6 +118,9 @@ function exposeProbe(world: World): void {
     },
     setBody(x: number, z: number, y = 1.7): void {
       world.camera.position.set(x, y, z);
+    },
+    events(): string[] {
+      return G.events.slice();
     },
     warp(bars: number): void {
       conductor.warp(bars);
