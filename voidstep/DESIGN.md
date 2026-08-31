@@ -141,3 +141,35 @@ draws — the circuit rides one storey above that with its telegraphs up).
 - **Attacks on single-tile decks beyond the sweep** — a lane dodge on one
   tile is a coin-flip, not a move (dance: a dodge is a move, never a
   coin-flip). Singles duck; only the skywalk hosts the full table.
+
+## Where it ended up: THE STEP, inside `dance`
+
+The consolidation's real destination was never a second app to install. It
+is a **door in the club** — the venue's south-west corner, the arcade's
+opposite number across the way in — with a portal frame standing in an
+otherwise bare room. Walk into the frame and the hall packs away exactly as
+it does when a set books the floor; the void comes up, the rig plants on the
+home pad, and the club's teleport goes off. Close the lap and it hands you
+back out through the doorway you came in by, which the circuit's geometry
+already guaranteed: the ledger closes at centre, so the way home is always
+where you left it.
+
+Two things changed on the way across, and both are subtractions:
+
+- **The attacks stayed here.** Beam, rail, seesaw, surge, gate and sweep are
+  the GOOPLIATH's words, thrown by a boss on a stage. Out on the circuit
+  there is no boss, and a course that throws the raid's moves at you is a
+  second raid rather than a second game. Inside `dance` the ground is the
+  only thing that speaks — the deck wash, the wrapping rims and the dying
+  corner posts carry the whole grammar, and the energy law they were the
+  trigger for now reads off the one hazard that remains: the ground you own,
+  counting itself out.
+- **The environment stopped being a clone.** This build copies `voidkit`
+  wholesale; the port imports the club's own. One world language, one file.
+
+What survived untouched is the part that mattered: `rig = anchor(tracked)`,
+the gated clean-only handover, the slip in place of the slide, the paired
+step, the closed ledger, the countdown grammar, wayfinding, the ghost
+overlays, `bounded-floor` as validation, and the ban on locomotion
+interfaces — which the club, being a teleport room, has to actively switch
+off at the door.

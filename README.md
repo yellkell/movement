@@ -34,6 +34,18 @@ relay, the paternoster, the mill you walk like a crank, call plates, the
 gauntlet — and the ember, carried up from the water, relighting the well
 storey by storey.
 
+**And the consolidation has now gone home.** VOIDSTEP's circuit is built
+into `dance` itself, as a place you walk to: RAVE RAID's club has a door in
+its south-west corner — THE STEP, the arcade's opposite number across the
+way in — and stepping into the frame standing in that room takes the hall
+away and puts you on the home pad, with the club's teleport switched off and
+the frame-of-reference mechanic in its place. Close the lap and it hands you
+back out through the same doorway. **The attacks did not go with it**: the
+six moves are the GOOPLIATH's vocabulary and they belong to the raid, so
+inside `dance` the course is the floor and the step and nothing else. This
+repo stays the research house and the standalone build; the notes below are
+still where the mechanic is argued.
+
 [`voidstep/`](voidstep/) consolidates the two houses into one experience:
 stepwell's tracked-platform mechanic **simplified** — the forced-switch
 slide correction is deleted outright; handover is clean or it is a slip,
