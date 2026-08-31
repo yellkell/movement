@@ -22,6 +22,22 @@ experience:
   telegraph language, to keep the body moving: the two games share one
   grammar, and a night in either trains you for the other.
 
+## …and where it ended up
+
+This build is the standalone. The circuit itself now also lives **inside
+`dance`**, reached through a door: the club's south-west corner is THE STEP,
+a bare room with a portal frame standing in it, and walking into the frame
+swaps the whole world — hall out, void in, teleport off, frame of reference
+on. Closing the lap puts you back in the room you left from.
+
+One thing was deliberately left behind in the port: **the attacks**. Out
+there the six stolen moves are the raid's own vocabulary, thrown by a boss
+who is not on the circuit, and a course that also throws them is a second
+raid rather than a second game. Inside `dance` the floor does all the
+talking and the only verb is the step. The version in this repo keeps them —
+it is the consolidation experiment, and the volley is the thing it was
+testing.
+
 ## The circuit
 
 You stand on the home pad at the arena's heart. The route rides **out**
